@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube Controller</title>
+    <style>
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-label {
+            margin-bottom: 5px;
+        }
+        .slider {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cube Controller</h1>
+    <div class="slider-container">
+        <div class="slider-label">Brightness: <span id="brightness-value">50</span></div>
+        <input type="range" min="0" max="100" value="50" class="slider" id="brightness-slider">
+    </div>
+    <button id="submit-button">Submit</button>
+    <script>
+        const brightnessSlider = document.getElementById('brightness-slider');
+        const brightnessValue = document.getElementById('brightness-value');
+
+        brightnessSlider.oninput = function() {
+            brightnessValue.innerText = this.value;
+        }
+
+        document.getElementById('submit-button').onclick = function() {
+            const data = {
+                brightness: brightnessSlider.value
+            };
+            fetch('/updateCubeData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+    </script>
+</body>
+</html>
