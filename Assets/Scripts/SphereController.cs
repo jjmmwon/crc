@@ -9,7 +9,11 @@ public class SphereController : MonoBehaviour
     public Volume postProcessVolume;
     private Bloom bloomLayer;
     private float currentRadiationLevel;
-    private string url = "http://192.168.0.60:5000/getCubeData";
+
+    public GameObject sphere;
+    private float currentScaleLevel;
+
+    private string url = "http://192.168.0.60:5000/getData";
 
     void Start()
     {
@@ -52,11 +56,18 @@ public class SphereController : MonoBehaviour
     {
         SphereData data = JsonUtility.FromJson<SphereData>(jsonResponse);
         currentRadiationLevel = data.brightness;
+        currentScaleLevel = data.scale;
 
         if (bloomLayer != null)
         {
             bloomLayer.intensity.value = currentRadiationLevel;
             Debug.Log("Bloom intensity updated to: " + currentRadiationLevel);
+        }
+
+        if (sphere != null)
+        {
+            sphere.transform.localScale = Vector3.one * currentScaleLevel;
+            Debug.Log("Sphere scale updated to: " + currentScaleLevel);
         }
     }
 
@@ -64,5 +75,6 @@ public class SphereController : MonoBehaviour
     private class SphereData
     {
         public float brightness;
+        public float scale;
     }
 }

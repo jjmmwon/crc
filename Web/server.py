@@ -6,22 +6,24 @@ app = Flask(__name__)
 CORS(app)
 
 # 전역 변수로 큐브 데이터를 저장
-cube_data = {
-    'brightness': 50
+send_data = {
+    'brightness': 50,
+    'scale': 0.4
 }
 
 @app.route('/')
 def index():
     return send_from_directory(os.getcwd(), 'index.html')
 
-@app.route('/getCubeData', methods=['GET'])
-def get_cube_data():
-    return jsonify(cube_data)
+@app.route('/getData', methods=['GET'])
+def get_data():
+    return jsonify(send_data)
 
-@app.route('/updateCubeData', methods=['POST'])
-def update_cube_data():
+@app.route('/updateData', methods=['POST'])
+def update_data():
     data = request.json
-    cube_data['brightness'] = float(data['brightness'])
+    send_data['brightness'] = float(data['brightness'])
+    send_data['scale'] = float(data['scale'])
     return jsonify(success=True)
 
 if __name__ == '__main__':

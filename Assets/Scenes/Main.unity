@@ -244,6 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postProcessVolume: {fileID: 274764796}
+  sphere: {fileID: 236331635}
 --- !u!114 &236331641
 MonoBehaviour:
   m_ObjectHideFlags: 0
