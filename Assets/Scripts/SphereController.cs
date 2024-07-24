@@ -8,15 +8,16 @@ public class SphereController : MonoBehaviour
 {
     public Volume postProcessVolume;
     private Bloom bloomLayer;
-    private float currentRadiationLevel;
+    private float currentRadiationLevel = 50;
 
     public GameObject sphere;
     private float currentScaleLevel;
 
     private string url = "http://192.168.0.60:5000/getData";
 
+   
     void Start()
-    {
+    {        
         if (postProcessVolume.profile.TryGet<Bloom>(out bloomLayer))
         {
             Debug.Log("Bloom layer found");
@@ -68,6 +69,15 @@ public class SphereController : MonoBehaviour
         {
             sphere.transform.localScale = Vector3.one * currentScaleLevel;
             Debug.Log("Sphere scale updated to: " + currentScaleLevel);
+        }
+    }
+
+    void Update()
+    {
+        float value = Mathf.Lerp(0, currentRadiationLevel, Mathf.PingPong(Time.time, 1));
+        if (bloomLayer != null)
+        {
+            bloomLayer.intensity.value = value;
         }
     }
 
