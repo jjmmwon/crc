@@ -105,7 +105,7 @@ class SensorPoller:
 
 
 if __name__ == "__main__":
-    sensor_poller = SensorPoller(poll_interval=1)
+    sensor_poller = SensorPoller(poll_interval=10)
     sensor_poller.start_polling()
 
     try:

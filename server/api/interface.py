@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from service import service
-from db import fetch_sensor_data
+from .db import fetch_sensor_data
 
 interface_bp = Blueprint("interface", __name__, url_prefix="/api/interface")
 
