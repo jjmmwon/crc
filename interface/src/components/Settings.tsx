@@ -10,9 +10,12 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Button,
+  Badge,
 } from "@chakra-ui/react";
 import { usePostSimulation } from "../hooks/usePostSimulation";
 import { usePostSettings } from "../hooks/usePostSettings";
+import { useIntervalFetch } from "@hooks";
+import { TConnection } from "@model";
 
 interface SettingsProps {
   width: string | number;
@@ -28,9 +31,21 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
   const handlePostSimulation = usePostSimulation();
   const handlePostSettings = usePostSettings();
 
+  const { data: isConnected } = useIntervalFetch<TConnection>(
+    "api/interface/getDeviceConnection",
+    3000
+  );
+
+  if (isConnected?.connected) {
+    const currentTime = new Date();
+    const connectionTime = new Date(isConnected.connected as string);
+    const diff = Math.abs(currentTime.getTime() - connectionTime.getTime());
+    return diff > 3000;
+  }
+
   return (
     <Box
-      p={4}
+      p={5}
       borderWidth={1}
       borderRadius="lg"
       boxShadow="md"
@@ -38,11 +53,18 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
       mx="auto"
       height={height}
     >
-      <VStack spacing={6}>
+      <VStack spacing={4}>
         <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
           Settings
         </Text>
-        {/* Simulation Mode Switch */}
+
+        <HStack justifyContent="space-between" width="100%">
+          <Text fontSize="lg">Device Connection</Text>
+          <Badge colorScheme={isConnected ? "green" : "red"}>
+            {isConnected ? "ON" : "OFF"}
+          </Badge>
+        </HStack>
+
         <HStack justifyContent="space-between" width="100%">
           <Text fontSize="lg">Simulation Mode</Text>
           <Switch

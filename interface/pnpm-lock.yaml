@@ -17,6 +17,9 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.13.0
     version: 11.13.0(@emotion/react@11.13.3)(@types/react@18.3.5)(react@18.3.1)
+  '@tanstack/react-query':
+    specifier: ^5.53.3
+    version: 5.53.3(react@18.3.1)
   '@types/d3':
     specifier: ^7.4.3
     version: 7.4.3
@@ -32,6 +35,12 @@ dependencies:
   d3:
     specifier: ^7.9.0
     version: 7.9.0
+  d3-interpolate:
+    specifier: ^3.0.1
+    version: 3.0.1
+  d3-scale:
+    specifier: ^4.0.2
+    version: 4.0.2
   framer-motion:
     specifier: ^11.3.31
     version: 11.3.31(react-dom@18.3.1)(react@18.3.1)
@@ -1958,6 +1967,19 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@tanstack/query-core@5.53.3:
+    resolution: {integrity: sha512-ZfjAgd7NpqDx0e4aYBt7EmS2enbulPrJwowTy+mayRE93WUUH+sIYHun1TdRjpGwDPMNNZ5D6goh7n3CwoO+HA==}
+    dev: false
+
+  /@tanstack/react-query@5.53.3(react@18.3.1):
+    resolution: {integrity: sha512-286mN/91CeM7vC6CZFLKYDHSw+WyMX6ekIvzoTbpM4xyPb99VSyCKPLyPgaOatKqYm6ooMBquSq9NGRdKgsJfg==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.53.3
+      react: 18.3.1
+    dev: false
 
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}

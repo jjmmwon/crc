@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import App from "./App";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const theme = extendTheme({
   fonts: {
@@ -69,10 +70,14 @@ const theme = extendTheme({
 
 theme.sizes.container["2xl"] = "1920px";
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>
 );

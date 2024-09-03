@@ -9,35 +9,29 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import useIntervalFetch from "@hooks/useIntervalFetch"; // 커스텀 훅을 import 합니다.
 import { TSensorData } from "@model";
-import { Box, VStack, Text } from "@chakra-ui/react";
+import { Box, VStack, Text, HStack } from "@chakra-ui/react";
+import { useSensorListStore } from "@stores";
 
 interface DynamicLineChartProps {
   width: string | number;
   height: string | number;
   chartHeight: string | number;
-  sensorList: `sensor${number}`[];
+  data: TSensorData[];
   windowSize: number;
-  interval: number;
+  sensorList: `sensor${number}`[];
 }
 
 const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
   width,
   chartHeight,
-  sensorList,
+  data,
   windowSize,
-  interval,
 }) => {
-  // 커스텀 훅을 사용하여 데이터를 가져옵니다.
-  const { data } = useIntervalFetch<TSensorData[]>(
-    "api/interface/getSensorData",
-    interval
-  );
-  if (!data) return;
-  // const windowSize = 30;
+  const sensorList = useSensorListStore((state) => state.sensorList);
 
   const showingData = data.slice(-windowSize);
+  console.log(showingData);
 
   const sensorMean = showingData.map((d) => d.sensorMean);
   const time = showingData.map((d) =>
@@ -72,7 +66,6 @@ const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
     "#bab0ab",
   ];
 
-  console.log(chartData);
   return (
     <ResponsiveContainer width={width} height={chartHeight}>
       <LineChart data={chartData} margin={{ right: 30 }}>
@@ -114,9 +107,12 @@ const DynamicLineChartView: React.FC<DynamicLineChartProps> = (
       height={props.height}
     >
       <VStack spacing={6}>
-        <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
-          Radiation Monitoring View
-        </Text>
+        <HStack justifyContent="space-between" width="100%">
+          <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
+            Radiation Trend View{" "}
+            {`(Current Avg: ${props.data.slice(-1)[0].sensorMean.toFixed(2)})`}
+          </Text>
+        </HStack>
 
         <DynamicLineChart {...props} />
       </VStack>
