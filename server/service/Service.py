@@ -1,21 +1,22 @@
 from datetime import datetime
+import random
 
 
 class Service:
     def __init__(self):
         self.simul_config = {
-            "brightness": 50,
-            "scale": 0.4,
+            "level": 0,
         }  # interface와 device에서 공유하는 데이터
         self.simulation = False  # 시뮬레이션 모드 상태
         self.device_connection: datetime = None  # 디바이스 연결 상태
 
     def get_simul_config(self):
+        self.simul_config = {"level": random.randint(0, 100)}
+
         return self.simul_config
 
-    def set_simul_config(self, brightness: float, scale: float):
-        self.simul_config["brightness"] = brightness
-        self.simul_config["scale"] = scale
+    def set_simul_config(self, level: float):
+        self.simul_config["level"] = level
 
     def set_simulation(self, simulation: bool):
         self.simulation = simulation

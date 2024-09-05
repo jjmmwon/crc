@@ -5,6 +5,8 @@ import threading
 import requests
 import sqlite3  # SQLite 사용을 위해 sqlite3 모듈 사용
 
+from model.SensorModel import SensorModel
+
 
 class SensorPoller:
     def __init__(
@@ -72,9 +74,29 @@ class SensorPoller:
             response = requests.get(self.sensor_address)
             if response.status_code == 200:
                 # 성공적으로 데이터를 받으면 반환
-                sensor_data = response.json()
-                sensor_data["sensorMean"] = sum(sensor_data.values()) / len(sensor_data)
-                sensor_data["timestamp"] = datetime.now().isoformat()
+                sensor_data = {}
+                response_json = SensorModel(**response.json()).model_dump()
+
+                devices = (
+                    response_json.get("device_group").get("192.168.0.6").get("devices")
+                )
+
+                sensor_data["timestamp"] = datetime.strptime(
+                    response_json.get("time"), "%Y-%m-%d %H:%M:%S"
+                ).isoformat()
+
+                total, cnt = 0, 0
+                for i in range(1, 50):
+                    sensor_data[f"sensor{i}"] = devices.get(f"MSV-0{i}", 0)
+                    total += (
+                        sensor_data[f"sensor{i}"]
+                        if sensor_data[f"sensor{i}"] != -1
+                        else 0
+                    )
+                    cnt += 1 if sensor_data[f"sensor{i}"] != -1 else 0
+
+                sensor_data["sensorMean"] = total / cnt if cnt > 0 else 0
+
                 print(sensor_data)
                 return sensor_data
             print(f"Failed to get sensor data: {response.status_code}")

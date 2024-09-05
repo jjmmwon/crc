@@ -32,4 +32,4 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=50005, help="Port number.")
     args = parser.parse_args()
 
-    app.run(host="localhost", port=args.port, debug=True)
+    app.run(host="0.0.0.0", port=args.port, debug=True)

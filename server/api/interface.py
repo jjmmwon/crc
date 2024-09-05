@@ -19,7 +19,8 @@ def get_device_connection():
 @interface_bp.route("/setSimulConfig", methods=["POST"])
 def update_data():
     data = request.json
-    service.set_simul_config(float(data["brightness"]), float(data["scale"]))
+    print(data)
+    service.set_simul_config(float(data["level"]))
     return jsonify(success=True)
 
 
