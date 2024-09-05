@@ -25,8 +25,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ width, height }) => {
   // State for settings
   const [simulation, setSimulation] = useState(false);
-  const [brightness, setBrightness] = useState(50); // Default brightness value
-  const [scale, setScale] = useState(0.4); // Default scale value
+  const [level, setLevel] = useState(50); // Default value
 
   const handlePostSimulation = usePostSimulation();
   const handlePostSettings = usePostSettings();
@@ -36,11 +35,14 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
     3000
   );
 
+  let connected = false;
+
   if (isConnected?.connected) {
     const currentTime = new Date();
     const connectionTime = new Date(isConnected.connected as string);
     const diff = Math.abs(currentTime.getTime() - connectionTime.getTime());
-    return diff > 3000;
+
+    connected = diff < 30000;
   }
 
   return (
@@ -60,8 +62,8 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
 
         <HStack justifyContent="space-between" width="100%">
           <Text fontSize="lg">Device Connection</Text>
-          <Badge colorScheme={isConnected ? "green" : "red"}>
-            {isConnected ? "ON" : "OFF"}
+          <Badge colorScheme={connected ? "green" : "red"}>
+            {connected ? "ON" : "OFF"}
           </Badge>
         </HStack>
 
@@ -80,32 +82,13 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
 
         {/* Brightness Slider */}
         <VStack align="stretch" width="100%">
-          <Text fontSize="lg">Brightness: {brightness}%</Text>
+          <Text fontSize="lg">Level: {level}</Text>
           <Slider
             aria-label="brightness-slider"
-            value={brightness}
+            value={level}
             min={0}
             max={100}
-            onChange={(val) => setBrightness(val)}
-            colorScheme="blue"
-          >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </VStack>
-
-        {/* Scale Slider */}
-        <VStack align="stretch" width="100%">
-          <Text fontSize="lg">Scale: {scale}</Text>
-          <Slider
-            aria-label="scale-slider"
-            value={scale}
-            min={0.1}
-            max={2.0}
-            step={0.1}
-            onChange={(val) => setScale(val)}
+            onChange={(val) => setLevel(val)}
             colorScheme="blue"
           >
             <SliderTrack>
@@ -116,10 +99,7 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
         </VStack>
 
         {/* Send Button */}
-        <Button
-          colorScheme="blue"
-          onClick={() => handlePostSettings(brightness, scale)}
-        >
+        <Button colorScheme="blue" onClick={() => handlePostSettings(level)}>
           Send Settings
         </Button>
       </VStack>

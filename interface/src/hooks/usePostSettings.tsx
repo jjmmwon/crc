@@ -3,10 +3,9 @@ import { useToast } from "@chakra-ui/react";
 export const usePostSettings = () => {
   const toast = useToast();
 
-  const handlePostSettings = async (brightness: number, scale: number) => {
+  const handlePostSettings = async (level: number) => {
     const settings = {
-      brightness,
-      scale,
+      level: level,
     };
 
     try {
@@ -21,7 +20,7 @@ export const usePostSettings = () => {
       if (response.ok) {
         toast({
           title: "Settings updated.",
-          description: "Brightness and Scale have been successfully updated.",
+          description: "Level has been successfully updated.",
           status: "success",
           duration: 3000,
           isClosable: true,

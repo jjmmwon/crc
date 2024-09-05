@@ -35,7 +35,10 @@ const DynamicBarChart: React.FC<DynamicBarChartProps> = ({
   const chartData = [
     ...sensorList.map((sensorKey) => ({
       name: sensorKey,
-      value: latestData[`sensor${sensorKey}` as keyof TSensorData],
+      value:
+        (latestData[`sensor${sensorKey}` as keyof TSensorData] as number) < 0
+          ? 0
+          : latestData[`sensor${sensorKey}` as keyof TSensorData],
     })),
   ];
 

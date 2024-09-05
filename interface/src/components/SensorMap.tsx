@@ -28,7 +28,10 @@ const SensorGrid: React.FC<SensorGridProps> = ({ rows, columns, data }) => {
   const colorsScale = d3.scaleSequential(d3.interpolateInferno).domain([50, 0]);
   const colors = Array.from({ length: rows * columns }, (_, index) => {
     const sensor = data.slice(-1)[0][`sensor${index + 1}`];
-    return sensor ? colorsScale(sensor) : "green";
+
+    if (sensor < 0) return "gray";
+
+    return sensor ? colorsScale(sensor) : "gray";
   });
 
   console.log(sensorList.includes(`sensor${14}`));
