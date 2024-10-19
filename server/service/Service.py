@@ -1,28 +1,47 @@
 from datetime import datetime
-import random
 
 
 class Service:
     def __init__(self):
-        self.simul_config = {
-            "level": 0,
-        }  # interface와 device에서 공유하는 데이터
-        self.simulation = False  # 시뮬레이션 모드 상태
         self.device_connection: datetime = None  # 디바이스 연결 상태
-
-    def get_simul_config(self):
-        self.simul_config = {"level": random.randint(0, 100)}
-
-        return self.simul_config
-
-    def set_simul_config(self, level: float):
-        self.simul_config["level"] = level
+        self.setting = {
+            "simulation": False,
+            "level": 50,
+            "maxScale": 1000,
+            "circleSize1": 5,
+            "circleSize2": 10,
+            "circleSize3": 15,
+            "circleOpacity1": 1,
+            "circleOpacity2": 0.5,
+            "circleOpacity3": 0.3,
+            "circleColor1": 1,
+            "circleColor2": 0.66,
+            "circleColor3": 0.33,
+        }
+        self.sensor_dist = {f"sensor{i}": 1 for i in range(1, 50)}
 
     def set_simulation(self, simulation: bool):
-        self.simulation = simulation
+        self.setting["simulation"] = simulation
+
+    def set_setting(self, setting: dict):
+        self.setting = setting
+
+    def set_sensor_dist(self, sensor_dist: dict):
+        self.sensor_dist = sensor_dist
+        print(self.sensor_dist)
+        return
 
     def get_simulation(self):
-        return self.simulation
+        return self.setting.get("simulation", False)
+
+    def get_setting(self):
+        return self.setting
+
+    def get_data(self):
+        if self.setting["simulation"]:
+            return {"level": self.setting.level}
+        else:
+            return {"level": 0}  # source 값 계산한 결과 반환
 
     def update_device_connection(self):
         self.device_connection = datetime.now()

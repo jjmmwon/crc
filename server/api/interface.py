@@ -16,19 +16,33 @@ def get_device_connection():
     return jsonify({"connected": service.get_device_connection()})
 
 
-@interface_bp.route("/setSimulConfig", methods=["POST"])
-def update_data():
-    data = request.json
-    print(data)
-    service.set_simul_config(float(data["level"]))
-    return jsonify(success=True)
+@interface_bp.route("/setSensorDist", methods=["POST"])
+def set_sensor_dist():
+    try:
+        data = request.json
+        service.set_sensor_dist(data)
+
+        return jsonify({"success": True, "sensorDist": data}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@interface_bp.route("/setSettings", methods=["POST"])
+def set_settings():
+    try:
+        data = request.json
+        service.set_setting(data)
+
+        return jsonify({"success": True, "settings": data}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @interface_bp.route("/setSimulation", methods=["POST"])
 def set_simulation():
     """simulation mode 설정"""
     try:
-        data = request.json
+        data: dict = request.json
         simulation = data.get("simulation", False)
         service.set_simulation(simulation)
 

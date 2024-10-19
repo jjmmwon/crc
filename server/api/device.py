@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from service import service
+from .db import fetch_sensor_data
 
 device_bp = Blueprint("device", __name__, url_prefix="/api/device")
 
@@ -9,11 +10,9 @@ def get_data():
     """device client에 데이터를 제공."""
     service.update_device_connection()  # device 접속 시간 최신화
 
-    simulation = service.get_simulation()
+    return jsonify(service.get_data())
 
-    if simulation:
-        pass
-    else:
-        pass
 
-    return jsonify(service.get_simul_config())
+@device_bp.route("/getSetting", methods=["GET"])
+def get_setting():
+    return jsonify(service.get_setting())

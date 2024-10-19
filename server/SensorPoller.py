@@ -2,6 +2,7 @@ from datetime import datetime
 import random
 import time
 import threading
+import json
 import requests
 import sqlite3  # SQLite 사용을 위해 sqlite3 모듈 사용
 
@@ -29,12 +30,11 @@ class SensorPoller:
         cursor = conn.cursor()
 
         sensor_columns = ", ".join(
-            [f"sensor{i} REAL" for i in range(1, 50)]
+            [f"sensor{i} REAL NULL" for i in range(1, 50)]
         )  # SQLite에서 REAL 사용
         init_query = f"""
             CREATE TABLE IF NOT EXISTS sensor_data (
                 timestamp DATETIME,
-                sensorMean REAL,
                 {sensor_columns}
             )
         """
@@ -61,6 +61,9 @@ class SensorPoller:
 
         while not self._stop_event.is_set():
             sensor_data = self._request_sensor_data()
+            if sensor_data is None:
+                time.sleep(self.poll_interval)
+                continue
             self._save_to_db(cursor, sensor_data)
             conn.commit()  # 데이터베이스에 변경사항 저장
             time.sleep(self.poll_interval)
@@ -70,46 +73,50 @@ class SensorPoller:
     def _request_sensor_data(self):
         # 센서 데이터를 요청하는 부분
         if self.sensor_address:
-            # 센서 주소로 요청
-            response = requests.get(self.sensor_address)
-            if response.status_code == 200:
+            try:
+                print(self.sensor_address)
+                # 센서 주소로 요청
+                response = requests.get(self.sensor_address)
+                response.raise_for_status()  # HTTP 오류가 발생하면 예외 발생
+
                 # 성공적으로 데이터를 받으면 반환
                 sensor_data = {}
-                response_json = SensorModel(**response.json()).model_dump()
 
-                devices = (
-                    response_json.get("device_group").get("192.168.0.6").get("devices")
-                )
+                response = json.loads(response.text)
+                response_json = SensorModel(**response).model_dump()
+
+                devices = response_json.get("device_group").get("null").get("devices")
 
                 sensor_data["timestamp"] = datetime.strptime(
                     response_json.get("time"), "%Y-%m-%d %H:%M:%S"
                 ).isoformat()
 
-                total, cnt = 0, 0
                 for i in range(1, 50):
-                    sensor_data[f"sensor{i}"] = devices.get(f"MSV-0{i}", 0)
-                    total += (
-                        sensor_data[f"sensor{i}"]
-                        if sensor_data[f"sensor{i}"] != -1
-                        else 0
-                    )
-                    cnt += 1 if sensor_data[f"sensor{i}"] != -1 else 0
-
-                sensor_data["sensorMean"] = total / cnt if cnt > 0 else 0
+                    sensor_data[f"sensor{i}"] = devices.get(f"MSV-0{i}", None)
 
                 print(sensor_data)
                 return sensor_data
-            print(f"Failed to get sensor data: {response.status_code}")
-        else:
-            # 주소가 없으면 예시 데이터 반환
-            sensor_data = {
-                f"sensor{i}": 10 + random.uniform(0, 10) for i in range(1, 50)
-            }
-            sensor_data["sensorMean"] = sum(sensor_data.values()) / len(sensor_data)
-            sensor_data["timestamp"] = datetime.now().isoformat()
 
-            print(sensor_data)
-            return sensor_data
+            except requests.exceptions.RequestException as e:
+                # 요청 중에 발생하는 모든 예외 처리 (연결 오류, 타임아웃 등)
+                print(f"Failed to get sensor data: {e}")
+            except json.JSONDecodeError as e:
+                # JSON 디코딩 오류 처리
+                print(f"Failed to parse response JSON: {e}")
+            except KeyError as e:
+                # 키 오류 처리 (예상하지 못한 데이터 구조일 때)
+                print(f"Unexpected data format: missing key {e}")
+            except Exception as e:
+                # 그 외의 모든 일반적인 예외 처리
+                print(f"An unexpected error occurred: {e}")
+
+        # 주소가 없거나 오류 발생 시 예시 데이터 반환
+        sensor_data = {f"sensor{i}": 10 + random.uniform(0, 10) for i in range(1, 50)}
+        sensor_data["sensor10"] = None
+        sensor_data["timestamp"] = datetime.now().isoformat()
+
+        print(sensor_data)
+        return sensor_data
 
     def _save_to_db(self, cursor, sensor_data: dict):
         # 센서 데이터를 DB에 저장
@@ -127,7 +134,10 @@ class SensorPoller:
 
 
 if __name__ == "__main__":
-    sensor_poller = SensorPoller(poll_interval=10)
+    # sensor_poller = SensorPoller(
+    #     poll_interval=1, sensor_address="http://192.168.79.106:5001/getData"
+    # )
+    sensor_poller = SensorPoller(poll_interval=1, sensor_address=None)
     sensor_poller.start_polling()
 
     try:

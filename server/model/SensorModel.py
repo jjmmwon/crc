@@ -5,12 +5,13 @@ from typing import Dict, Union
 
 
 class DeviceGroup(BaseModel):
-    status: str
     devices: Dict[str, int]
+    device_count: int
 
 
 class SensorModel(BaseModel):
     time: str
+    status: str
     device_group: Dict[str, DeviceGroup] = Field(..., alias="device_group")
     device_count: int
 
