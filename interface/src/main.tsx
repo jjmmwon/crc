@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { Center, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import App from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -13,6 +13,8 @@ const theme = extendTheme({
     global: {
       body: {
         bg: "whitealpha.100",
+        height: "100lvh",
+        overflow: "hidden",
       },
     },
   },
@@ -76,7 +78,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <Center flexDir={"column"} minH={"100dvh"} w={"full"}>
+          <App />
+        </Center>
       </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>

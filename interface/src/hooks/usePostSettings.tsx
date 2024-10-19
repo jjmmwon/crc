@@ -1,15 +1,12 @@
 import { useToast } from "@chakra-ui/react";
+import { ISettings } from "@model";
 
-export const usePostSettings = () => {
+const usePostSettings = () => {
   const toast = useToast();
 
-  const handlePostSettings = async (level: number) => {
-    const settings = {
-      level: level,
-    };
-
+  const handlePostSettings = async (settings: ISettings) => {
     try {
-      const response = await fetch("/api/interface/setSimulConfig", {
+      const response = await fetch("/api/interface/setSettings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -20,7 +17,7 @@ export const usePostSettings = () => {
       if (response.ok) {
         toast({
           title: "Settings updated.",
-          description: "Level has been successfully updated.",
+          description: "Settings have been updated.",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -48,3 +45,5 @@ export const usePostSettings = () => {
 
   return handlePostSettings;
 };
+
+export default usePostSettings;

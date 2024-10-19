@@ -5,17 +5,18 @@ import {
   HStack,
   Text,
   Switch,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
   Button,
   Badge,
+  Divider,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { usePostSimulation } from "../hooks/usePostSimulation";
-import { usePostSettings } from "../hooks/usePostSettings";
+import { usePostSettings } from "@hooks";
 import { useIntervalFetch } from "@hooks";
-import { TConnection } from "@model";
+import { ISettings, TConnection } from "@model";
 
 interface SettingsProps {
   width: string | number;
@@ -23,16 +24,33 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ width, height }) => {
-  // State for settings
-  const [simulation, setSimulation] = useState(false);
-  const [level, setLevel] = useState(50); // Default value
+  const [settings, setSettings] = useState<ISettings>({
+    simulation: false,
+    level: 50,
+    maxScale: 1000,
+    circleSize1: 5,
+    circleSize2: 10,
+    circleSize3: 15,
+    circleOpacity1: 1,
+    circleOpacity2: 0.5,
+    circleOpacity3: 0.3,
+    circleColor1: 1,
+    circleColor2: 0.66,
+    circleColor3: 0.33,
+  });
 
-  const handlePostSimulation = usePostSimulation();
+  const updateSetting = (key: keyof ISettings, value: number | boolean) => {
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      [key]: value,
+    }));
+  };
+
   const handlePostSettings = usePostSettings();
 
   const { data: isConnected } = useIntervalFetch<TConnection>(
     "api/interface/getDeviceConnection",
-    3000
+    10000
   );
 
   let connected = false;
@@ -56,52 +74,225 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
       height={height}
     >
       <VStack spacing={4}>
-        <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
-          Settings
-        </Text>
-
         <HStack justifyContent="space-between" width="100%">
-          <Text fontSize="lg">Device Connection</Text>
-          <Badge colorScheme={connected ? "green" : "red"}>
-            {connected ? "ON" : "OFF"}
-          </Badge>
+          <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
+            Settings
+          </Text>
+          <HStack>
+            <Text fontSize="lg">Device Connection</Text>
+            <Badge colorScheme={connected ? "green" : "red"}>
+              {connected ? "ON" : "OFF"}
+            </Badge>
+          </HStack>
         </HStack>
 
-        <HStack justifyContent="space-between" width="100%">
-          <Text fontSize="lg">Simulation Mode</Text>
-          <Switch
-            isChecked={simulation}
-            onChange={() => {
-              const newSimulation = !simulation;
-              setSimulation(newSimulation); // Update state
-              handlePostSimulation(newSimulation); // Post immediately when changed
-            }}
-            colorScheme="blue"
-          />
-        </HStack>
+        <Box
+          width="100%"
+          border="1px"
+          borderColor="gray.200"
+          borderRadius="md"
+          p={4}
+        >
+          <VStack align="stretch" spacing={3}>
+            <Text fontSize="lg" fontWeight="bold">
+              Simulation Settings
+            </Text>
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Simulation Mode</Text>
+              <Switch
+                isChecked={settings.simulation}
+                onChange={() => {
+                  const newSimulation = !settings.simulation;
+                  updateSetting("simulation", newSimulation); // Update state
+                }}
+                colorScheme="blue"
+              />
+            </HStack>
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Level (0~100)</Text>
+              <NumberInput
+                value={settings.level}
+                min={0}
+                max={100}
+                onChange={(_, val) => updateSetting("level", val)}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </HStack>
 
-        {/* Brightness Slider */}
-        <VStack align="stretch" width="100%">
-          <Text fontSize="lg">Level: {level}</Text>
-          <Slider
-            aria-label="brightness-slider"
-            value={level}
-            min={0}
-            max={100}
-            onChange={(val) => setLevel(val)}
-            colorScheme="blue"
-          >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-        </VStack>
+            <Button
+              colorScheme="blue"
+              onClick={() => handlePostSettings(settings)}
+            >
+              Send Simulation Settings
+            </Button>
+          </VStack>
+        </Box>
 
-        {/* Send Button */}
-        <Button colorScheme="blue" onClick={() => handlePostSettings(level)}>
-          Send Settings
-        </Button>
+        <Divider />
+
+        <Box
+          width="100%"
+          border="1px"
+          borderColor="gray.200"
+          borderRadius="md"
+          p={4}
+        >
+          <VStack align="stretch" spacing={3}>
+            <Text fontSize="lg" fontWeight="bold">
+              Scale Settings
+            </Text>
+
+            {/* Max Scale */}
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Max Value (uSv/h)</Text>
+              <NumberInput
+                value={settings.maxScale}
+                min={0}
+                max={10000}
+                width={"120px"}
+                onChange={(_, valueAsNumber) =>
+                  updateSetting("maxScale", valueAsNumber)
+                }
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </HStack>
+
+            <Button
+              colorScheme="blue"
+              onClick={() => handlePostSettings(settings)}
+            >
+              Send Scale Settings
+            </Button>
+          </VStack>
+        </Box>
+
+        <Divider />
+
+        <Box
+          width="100%"
+          border="1px"
+          borderColor="gray.200"
+          borderRadius="md"
+          p={4}
+        >
+          <VStack align="stretch" spacing={3}>
+            <Text fontSize="lg" fontWeight="bold">
+              Radiation Circle Settings
+            </Text>
+
+            {/* Circle Size Settings */}
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Circle Size 1, 2, 3 (meter)</Text>
+              <HStack>
+                {[1, 2, 3].map((num) => (
+                  <NumberInput
+                    width={"80px"}
+                    ms={2}
+                    key={`circleSize${num}`}
+                    value={
+                      settings[`circleSize${num}` as keyof ISettings] as number
+                    }
+                    min={0}
+                    max={20}
+                    onChange={(_, valueAsNumber) =>
+                      updateSetting(
+                        `circleSize${num}` as keyof ISettings,
+                        valueAsNumber
+                      )
+                    }
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                ))}
+              </HStack>
+            </HStack>
+
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Circle Opacity 1, 2, 3 (0~1)</Text>
+              <HStack>
+                {[1, 2, 3].map((num) => (
+                  <NumberInput
+                    width={"80px"}
+                    ms={2}
+                    key={`circleOpacity${num}`}
+                    value={
+                      settings[
+                        `circleOpacity${num}` as keyof ISettings
+                      ] as number
+                    }
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    onChange={(_, valueAsNumber) =>
+                      updateSetting(
+                        `circleOpacity${num}` as keyof ISettings,
+                        valueAsNumber
+                      )
+                    }
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                ))}
+              </HStack>
+            </HStack>
+
+            <HStack justifyContent="space-between" width="100%">
+              <Text fontSize="md">Circle Color 1, 2, 3 (0~1)</Text>
+              <HStack>
+                {[1, 2, 3].map((num) => (
+                  <NumberInput
+                    width={"80px"}
+                    ms={2}
+                    key={`circleColor${num}`}
+                    value={
+                      settings[`circleColor${num}` as keyof ISettings] as number
+                    }
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    onChange={(_, valueAsNumber) =>
+                      updateSetting(
+                        `circleColor${num}` as keyof ISettings,
+                        valueAsNumber
+                      )
+                    }
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                ))}
+              </HStack>
+            </HStack>
+
+            <Button
+              colorScheme="blue"
+              onClick={() => handlePostSettings(settings)}
+            >
+              Send Radiation Circle Settings
+            </Button>
+          </VStack>
+        </Box>
       </VStack>
     </Box>
   );

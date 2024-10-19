@@ -1,10 +1,9 @@
-import type SensorKey from "./TSensorKey";
+import type TSensorKey from "./TSensorKey";
 
 type TSensorData = {
   timestamp: string;
-  sensorMean: number;
 } & {
-  [key in SensorKey]: number;
+  [key in TSensorKey]: number;
 };
 
 export default TSensorData;

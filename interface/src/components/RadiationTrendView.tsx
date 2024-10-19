@@ -9,20 +9,23 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { TSensorData } from "@model";
-import { Box, VStack, Text, HStack } from "@chakra-ui/react";
+import { TSensorData, TSensorKey } from "@model";
+import { Box, VStack, Text, HStack, IconButton } from "@chakra-ui/react";
 import { useSensorListStore } from "@stores";
+import { BsPause, BsPlay } from "react-icons/bs";
 
-interface DynamicLineChartProps {
+interface RadiationTrendViewProps {
   width: string | number;
   height: string | number;
   chartHeight: string | number;
   data: TSensorData[];
   windowSize: number;
   sensorList: `sensor${number}`[];
+  paused: boolean;
+  setPaused: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
+const DynamicLineChart: React.FC<RadiationTrendViewProps> = ({
   width,
   chartHeight,
   data,
@@ -31,9 +34,9 @@ const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
   const sensorList = useSensorListStore((state) => state.sensorList);
 
   const showingData = data.slice(-windowSize);
-  console.log(showingData);
+  // console.log(showingData);
 
-  const sensorMean = showingData.map((d) => d.sensorMean);
+  const sensorMean = showingData.map((d) => d.sensor49);
   const time = showingData.map((d) =>
     new Date(d.timestamp).toLocaleTimeString("en-GB", { hour12: false })
   );
@@ -42,12 +45,12 @@ const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
     // 기본적으로 시간과 Sensor Mean을 포함한 객체 생성
     const chartDataItem: { [key: string]: number | string } = {
       name: t,
-      "Sensor Mean": sensorMean[i],
+      Source: sensorMean[i],
     };
 
     // sensorList에 있는 각 key에 대해 해당 값을 추가
-    sensorList.forEach((sensorKey) => {
-      chartDataItem[sensorKey] = showingData[i][sensorKey]; // 예를 들어, data[i]['temperature']
+    sensorList.forEach((sensorKey: TSensorKey) => {
+      chartDataItem[sensorKey] = showingData[i][sensorKey];
     });
 
     return chartDataItem;
@@ -76,7 +79,7 @@ const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
         <Legend />
         <Line
           type="linear"
-          dataKey="Sensor Mean"
+          dataKey="Source"
           stroke={colormap[0]}
           animationDuration={50}
         />
@@ -94,24 +97,35 @@ const DynamicLineChart: React.FC<DynamicLineChartProps> = ({
   );
 };
 
-const DynamicLineChartView: React.FC<DynamicLineChartProps> = (
-  props: DynamicLineChartProps
+const RadiationTrendView: React.FC<RadiationTrendViewProps> = (
+  props: RadiationTrendViewProps
 ) => {
+  const { width, height, data, setPaused, paused } = props;
   return (
     <Box
       p={4}
       borderWidth={1}
       borderRadius="lg"
       boxShadow="md"
-      width={props.width}
-      height={props.height}
+      width={width}
+      height={height}
     >
       <VStack spacing={6}>
         <HStack justifyContent="space-between" width="100%">
           <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
-            Radiation Trend View{" "}
-            {`(Current Avg: ${props.data.slice(-1)[0].sensorMean.toFixed(2)})`}
+            Radiation Trend View
+            {` (Current Src: ${data.slice(-1)[0].sensor49.toFixed(2)}uSv/h)`}
           </Text>
+          <IconButton
+            onClick={() => setPaused((prev) => !prev)}
+            aria-label={paused ? "Play" : "Pause"}
+            icon={paused ? <BsPlay /> : <BsPause />}
+            ml={4}
+            borderRadius="full"
+            variant="outline"
+            size="lg"
+            _hover={{ bg: "gray.100" }}
+          />
         </HStack>
 
         <DynamicLineChart {...props} />
@@ -119,4 +133,4 @@ const DynamicLineChartView: React.FC<DynamicLineChartProps> = (
     </Box>
   );
 };
-export default DynamicLineChartView;
+export default RadiationTrendView;

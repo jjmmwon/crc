@@ -1,7 +1,7 @@
 import React from "react";
 import { SimpleGrid, Box, Text } from "@chakra-ui/react";
 import { useSensorListStore } from "@stores";
-import { TSensorData } from "@model";
+import { TSensorData, TSensorKey } from "@model";
 import * as d3 from "d3";
 
 interface SensorGridProps {
@@ -12,6 +12,7 @@ interface SensorGridProps {
 
 interface SensorMapProps {
   width: string | number;
+  height: string | number;
   rows: number;
   columns: number;
   data: TSensorData[];
@@ -22,12 +23,14 @@ const SensorGrid: React.FC<SensorGridProps> = ({ rows, columns, data }) => {
   const addSensor = useSensorListStore((state) => state.addSensor);
 
   const handleClick = (index: number) => {
-    addSensor(`sensor${index + 1}`);
+    addSensor(`sensor${index + 1}` as TSensorKey);
   };
 
-  const colorsScale = d3.scaleSequential(d3.interpolateInferno).domain([50, 0]);
+  const colorsScale = d3
+    .scaleSequential(d3.interpolateInferno)
+    .domain([10000, 0]);
   const colors = Array.from({ length: rows * columns }, (_, index) => {
-    const sensor = data.slice(-1)[0][`sensor${index + 1}`];
+    const sensor = data.slice(-1)[0][`sensor${index + 1}` as TSensorKey];
 
     if (sensor < 0) return "gray";
 
@@ -40,10 +43,14 @@ const SensorGrid: React.FC<SensorGridProps> = ({ rows, columns, data }) => {
     <Box
       key={index}
       bg={colors[index]}
-      borderWidth={sensorList.includes(`sensor${index + 1}`) ? "5px" : "1px"}
+      borderWidth={
+        sensorList.includes(`sensor${index + 1}` as TSensorKey) ? "5px" : "1px"
+      }
       rounded="sm"
       borderColor={
-        sensorList.includes(`sensor${index + 1}`) ? "green.700" : "green.300"
+        sensorList.includes(`sensor${index + 1}` as TSensorKey)
+          ? "green.700"
+          : "green.300"
       }
       aspectRatio={1}
       display="flex"
@@ -71,6 +78,7 @@ const SensorGrid: React.FC<SensorGridProps> = ({ rows, columns, data }) => {
 
 const SensorMap: React.FC<SensorMapProps> = ({
   width,
+  height,
   rows,
   columns,
   data,
@@ -82,6 +90,7 @@ const SensorMap: React.FC<SensorMapProps> = ({
       borderRadius="lg"
       boxShadow="md"
       width={width}
+      height={height}
       mx="auto"
     >
       <Text

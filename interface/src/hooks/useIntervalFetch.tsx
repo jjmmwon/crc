@@ -8,13 +8,16 @@ type TFetchedData<T> = {
 
 const useIntervalFetch = <T,>(
   url: string,
-  interval: number = 1000
+  interval: number = 1000,
+  paused: boolean = false
 ): TFetchedData<T> => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (paused) return;
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -23,7 +26,7 @@ const useIntervalFetch = <T,>(
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        console.log(result);
+        // console.log(result);
 
         setData(result);
         setLoading(false);
@@ -39,7 +42,7 @@ const useIntervalFetch = <T,>(
     const intervalId = setInterval(fetchData, interval); // 1초마다 데이터 로드
 
     return () => clearInterval(intervalId); // 클린업 함수
-  }, [url, interval]);
+  }, [url, interval, paused]);
 
   return { data, loading, error };
 };

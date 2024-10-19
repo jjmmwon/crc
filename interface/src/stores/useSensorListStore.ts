@@ -1,17 +1,15 @@
-import { SensorKey } from "@model";
+import { TSensorKey } from "@model";
 import { create } from "zustand";
 
 interface ISensorStore {
-  sensorList: SensorKey[];
-  addSensor: (data: SensorKey) => void;
+  sensorList: TSensorKey[];
+  addSensor: (data: TSensorKey) => void;
 }
 
 const useSensorListStore = create<ISensorStore>()((set) => ({
   sensorList: [],
   addSensor: (data) =>
     set((state) => {
-      console.log(data);
-      console.log(state.sensorList);
       const exists = state.sensorList.some((item) => item === data);
 
       // 이미 존재하면 제거
