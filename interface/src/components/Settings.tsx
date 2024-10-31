@@ -27,13 +27,13 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
   const [settings, setSettings] = useState<ISettings>({
     simulation: false,
     level: 50,
-    maxScale: 1000,
-    circleSize1: 5,
-    circleSize2: 10,
-    circleSize3: 15,
-    circleOpacity1: 1,
-    circleOpacity2: 0.5,
-    circleOpacity3: 0.3,
+    maxScale: 100,
+    circleSize1: 0.03,
+    circleSize2: 0.12,
+    circleSize3: 0.36,
+    circleAlpha1: 0.5,
+    circleAlpha2: 0.5,
+    circleAlpha3: 0.5,
     circleColor1: 1,
     circleColor2: 0.66,
     circleColor3: 0.33,
@@ -50,7 +50,7 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
 
   const { data: isConnected } = useIntervalFetch<TConnection>(
     "api/interface/getDeviceConnection",
-    10000
+    1000
   );
 
   let connected = false;
@@ -60,7 +60,7 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
     const connectionTime = new Date(isConnected.connected as string);
     const diff = Math.abs(currentTime.getTime() - connectionTime.getTime());
 
-    connected = diff < 30000;
+    connected = diff < 10000;
   }
 
   return (
@@ -203,7 +203,8 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
                       settings[`circleSize${num}` as keyof ISettings] as number
                     }
                     min={0}
-                    max={20}
+                    max={10}
+                    step={0.01}
                     onChange={(_, valueAsNumber) =>
                       updateSetting(
                         `circleSize${num}` as keyof ISettings,
@@ -222,24 +223,22 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
             </HStack>
 
             <HStack justifyContent="space-between" width="100%">
-              <Text fontSize="md">Circle Opacity 1, 2, 3 (0~1)</Text>
+              <Text fontSize="md">Circle Alpha 1, 2, 3 (0~1)</Text>
               <HStack>
                 {[1, 2, 3].map((num) => (
                   <NumberInput
                     width={"80px"}
                     ms={2}
-                    key={`circleOpacity${num}`}
+                    key={`circleAlpha${num}`}
                     value={
-                      settings[
-                        `circleOpacity${num}` as keyof ISettings
-                      ] as number
+                      settings[`circleAlpha${num}` as keyof ISettings] as number
                     }
                     min={0}
                     max={1}
-                    step={0.1}
+                    step={0.01}
                     onChange={(_, valueAsNumber) =>
                       updateSetting(
-                        `circleOpacity${num}` as keyof ISettings,
+                        `circleAlpha${num}` as keyof ISettings,
                         valueAsNumber
                       )
                     }
@@ -267,7 +266,7 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
                     }
                     min={0}
                     max={1}
-                    step={0.1}
+                    step={0.01}
                     onChange={(_, valueAsNumber) =>
                       updateSetting(
                         `circleColor${num}` as keyof ISettings,

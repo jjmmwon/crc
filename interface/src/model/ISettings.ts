@@ -5,9 +5,9 @@ interface ISettings {
   circleSize1: number;
   circleSize2: number;
   circleSize3: number;
-  circleOpacity1: number;
-  circleOpacity2: number;
-  circleOpacity3: number;
+  circleAlpha1: number;
+  circleAlpha2: number;
+  circleAlpha3: number;
   circleColor1: number;
   circleColor2: number;
   circleColor3: number;

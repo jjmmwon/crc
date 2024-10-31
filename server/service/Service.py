@@ -7,13 +7,13 @@ class Service:
         self.setting = {
             "simulation": False,
             "level": 50,
-            "maxScale": 1000,
-            "circleSize1": 5,
-            "circleSize2": 10,
-            "circleSize3": 15,
-            "circleOpacity1": 1,
-            "circleOpacity2": 0.5,
-            "circleOpacity3": 0.3,
+            "maxScale": 100,
+            "circleSize1": 0.03,
+            "circleSize2": 0.12,
+            "circleSize3": 0.36,
+            "circleAlpha1": 0.5,
+            "circleAlpha2": 0.5,
+            "circleAlpha3": 0.5,
             "circleColor1": 1,
             "circleColor2": 0.66,
             "circleColor3": 0.33,
@@ -41,7 +41,7 @@ class Service:
         if self.setting["simulation"]:
             return {"level": self.setting.level}
         else:
-            return {"level": 0}  # source 값 계산한 결과 반환
+            return {"level": 50}  # source 값 계산한 결과 반환
 
     def update_device_connection(self):
         self.device_connection = datetime.now()

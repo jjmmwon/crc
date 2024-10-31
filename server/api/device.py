@@ -10,7 +10,8 @@ def get_data():
     """device client에 데이터를 제공."""
     service.update_device_connection()  # device 접속 시간 최신화
 
-    return jsonify(service.get_data())
+    # return jsonify(service.get_data())
+    return jsonify(service.get_setting())
 
 
 @device_bp.route("/getSetting", methods=["GET"])
