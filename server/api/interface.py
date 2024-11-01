@@ -7,8 +7,11 @@ interface_bp = Blueprint("interface", __name__, url_prefix="/api/interface")
 
 @interface_bp.route("/getSensorData", methods=["GET"])
 def get_data():
+    window_size = int(request.args.get("windowSize", 50))
     data = fetch_sensor_data()
-    return jsonify(data)
+    service.update_sensor_data(data)
+
+    return jsonify(service.get_data_from_interface(window_size))
 
 
 @interface_bp.route("/getDeviceConnection", methods=["GET"])

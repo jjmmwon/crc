@@ -112,7 +112,6 @@ class SensorPoller:
 
         # 주소가 없거나 오류 발생 시 예시 데이터 반환
         sensor_data = {f"sensor{i}": 10 + random.uniform(0, 10) for i in range(1, 50)}
-        sensor_data["sensor10"] = None
         sensor_data["timestamp"] = datetime.now().isoformat()
 
         print(sensor_data)

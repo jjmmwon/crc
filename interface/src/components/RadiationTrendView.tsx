@@ -36,7 +36,7 @@ const DynamicLineChart: React.FC<RadiationTrendViewProps> = ({
   const showingData = data.slice(-windowSize);
   // console.log(showingData);
 
-  const sensorMean = showingData.map((d) => d.sensor49);
+  const source = showingData.map((d) => d.source);
   const time = showingData.map((d) =>
     new Date(d.timestamp).toLocaleTimeString("en-GB", { hour12: false })
   );
@@ -45,7 +45,7 @@ const DynamicLineChart: React.FC<RadiationTrendViewProps> = ({
     // 기본적으로 시간과 Sensor Mean을 포함한 객체 생성
     const chartDataItem: { [key: string]: number | string } = {
       name: t,
-      Source: sensorMean[i],
+      Source: source[i],
     };
 
     // sensorList에 있는 각 key에 대해 해당 값을 추가
@@ -114,7 +114,7 @@ const RadiationTrendView: React.FC<RadiationTrendViewProps> = (
         <HStack justifyContent="space-between" width="100%">
           <Text fontSize="2xl" fontWeight="bold" alignSelf="flex-start">
             Radiation Trend View
-            {` (Current Src: ${data.slice(-1)[0].sensor49.toFixed(2)}uSv/h)`}
+            {` (Current Src: ${data.slice(-1)[0].source.toFixed(2)}uSv/h)`}
           </Text>
           <IconButton
             onClick={() => setPaused((prev) => !prev)}

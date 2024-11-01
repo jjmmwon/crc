@@ -35,8 +35,8 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
     circleAlpha2: 0.5,
     circleAlpha3: 0.5,
     circleColor1: 1,
-    circleColor2: 0.66,
-    circleColor3: 0.33,
+    circleColor2: 1 / 16,
+    circleColor3: 1 / 36,
   });
 
   const updateSetting = (key: keyof ISettings, value: number | boolean) => {

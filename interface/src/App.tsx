@@ -15,8 +15,9 @@ import { useState } from "react";
 
 function App() {
   const [paused, setPaused] = useState(false);
+  const windowSize = 50;
   const { data } = useIntervalFetch<TSensorData[]>(
-    "api/interface/getSensorData",
+    `api/interface/getSensorData?windowSize=${windowSize}`,
     1000,
     paused
   );
@@ -43,7 +44,7 @@ function App() {
             chartHeight={300}
             data={data}
             sensorList={["sensor1", "sensor2"]}
-            windowSize={50}
+            windowSize={windowSize}
             paused={paused}
             setPaused={setPaused}
           />
@@ -53,7 +54,7 @@ function App() {
             height={"100%"}
             chartHeight={300}
             data={data}
-            windowSize={50}
+            windowSize={windowSize}
           />
         </VStack>
         <VStack>

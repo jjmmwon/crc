@@ -29,7 +29,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Run the Flask app with a specified port."
     )
-    parser.add_argument("--port", type=int, default=50015, help="Port number.")
+    parser.add_argument("--port", type=int, default=50005, help="Port number.")
     args = parser.parse_args()
 
     app.run(host="0.0.0.0", port=args.port, debug=True)

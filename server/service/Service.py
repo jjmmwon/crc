@@ -15,10 +15,15 @@ class Service:
             "circleAlpha2": 0.5,
             "circleAlpha3": 0.5,
             "circleColor1": 1,
-            "circleColor2": 0.66,
-            "circleColor3": 0.33,
+            "circleColor2": 1 / 16,
+            "circleColor3": 1 / 36,
         }
-        self.sensor_dist = {f"sensor{i}": 1 for i in range(1, 50)}
+        self.source = None
+        self.sensor_data = {
+            **{f"sensor{i}": None for i in range(1, 50)},
+            "source": None,
+        }
+        self.sensor_dist = {f"sensor{i}": 0.5 for i in range(1, 50)}
 
     def set_simulation(self, simulation: bool):
         self.setting["simulation"] = simulation
@@ -35,19 +40,53 @@ class Service:
         return self.setting.get("simulation", False)
 
     def get_setting(self):
-        return self.setting
-
-    def get_data(self):
         if self.setting["simulation"]:
-            return {"level": self.setting.level}
+            return self.setting
+
         else:
-            return {"level": 50}  # source 값 계산한 결과 반환
+            setting = self.setting.copy()
+            setting["level"] = self.source
+
+            return setting
 
     def update_device_connection(self):
         self.device_connection = datetime.now()
 
     def get_device_connection(self):
         return self.device_connection.isoformat() if self.device_connection else False
+
+    def update_sensor_data(self, data):
+        self.sensor_data = data
+        self.source = self._compute_source(self.sensor_data[-1])
+
+    def get_data_from_interface(self, window_size=50):
+        sensor_data = self.sensor_data[-window_size:]
+
+        sensor_data_with_source = [
+            {**data, "source": self._compute_source(data)} for data in sensor_data
+        ]
+
+        return sensor_data_with_source
+
+    def get_data_from_device(self):
+        if self.setting["simulation"]:
+            return {"level": self.setting.level}
+        else:
+            return {"level": self.source}
+
+    def _compute_source(self, data):
+        keys = [f"sensor{i}" for i in range(1, 50)]
+
+        valid_sources = [
+            (float(self.sensor_dist[key]) ** 2) * 100 * float(data[key])
+            for key in keys
+            if data[key] is not None and self.sensor_dist[key] is not None
+        ]
+
+        if not valid_sources:
+            return 0
+
+        return sum(valid_sources) / len(valid_sources)
 
 
 # 싱글톤 인스턴스 생성
