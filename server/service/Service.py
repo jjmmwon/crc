@@ -7,16 +7,16 @@ class Service:
         self.setting = {
             "simulation": False,
             "level": 50,
-            "maxScale": 100,
+            "maxScale": 500,
             "circleSize1": 0.03,
-            "circleSize2": 0.12,
-            "circleSize3": 0.36,
+            "circleSize2": 0.7,
+            "circleSize3": 1.5,
             "circleAlpha1": 0.5,
             "circleAlpha2": 0.5,
             "circleAlpha3": 0.5,
             "circleColor1": 1,
-            "circleColor2": 1 / 16,
-            "circleColor3": 1 / 36,
+            "circleColor2": 1 / 3,
+            "circleColor3": 1 / 10,
         }
         self.source = None
         self.sensor_data = {
@@ -33,6 +33,7 @@ class Service:
 
     def set_sensor_dist(self, sensor_dist: dict):
         self.sensor_dist = sensor_dist
+        print(sensor_dist)
         print(self.sensor_dist)
         return
 
@@ -45,7 +46,7 @@ class Service:
 
         else:
             setting = self.setting.copy()
-            setting["level"] = self.source
+            setting["level"] = self.source if self.source else 0
 
             return setting
 

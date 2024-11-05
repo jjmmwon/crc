@@ -112,6 +112,8 @@ class SensorPoller:
 
         # 주소가 없거나 오류 발생 시 예시 데이터 반환
         sensor_data = {f"sensor{i}": 10 + random.uniform(0, 10) for i in range(1, 50)}
+        for i in range(1, 10):
+            sensor_data[f"sensor{i}"] = None
         sensor_data["timestamp"] = datetime.now().isoformat()
 
         print(sensor_data)
@@ -133,10 +135,10 @@ class SensorPoller:
 
 
 if __name__ == "__main__":
-    # sensor_poller = SensorPoller(
-    #     poll_interval=1, sensor_address="http://192.168.79.106:5001/getData"
-    # )
-    sensor_poller = SensorPoller(poll_interval=1, sensor_address=None)
+    sensor_poller = SensorPoller(
+        poll_interval=1, sensor_address="http://192.168.60.106:5001/getData"
+    )
+    # sensor_poller = SensorPoller(poll_interval=1, sensor_address=None)
     sensor_poller.start_polling()
 
     try:
