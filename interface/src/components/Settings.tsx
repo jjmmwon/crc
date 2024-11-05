@@ -27,16 +27,16 @@ const Settings: React.FC<SettingsProps> = ({ width, height }) => {
   const [settings, setSettings] = useState<ISettings>({
     simulation: false,
     level: 50,
-    maxScale: 100,
+    maxScale: 500,
     circleSize1: 0.03,
-    circleSize2: 0.12,
-    circleSize3: 0.36,
+    circleSize2: 0.7,
+    circleSize3: 1.5,
     circleAlpha1: 0.5,
     circleAlpha2: 0.5,
     circleAlpha3: 0.5,
     circleColor1: 1,
-    circleColor2: 1 / 16,
-    circleColor3: 1 / 36,
+    circleColor2: 1 / 3,
+    circleColor3: 1 / 10,
   });
 
   const updateSetting = (key: keyof ISettings, value: number | boolean) => {

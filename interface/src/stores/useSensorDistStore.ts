@@ -8,7 +8,7 @@ interface ISensorDistStore {
 
 const useSensorDistStore = create<ISensorDistStore>()((set) => ({
   sensorDist: Object.fromEntries(
-    Array.from({ length: 49 }, (_, i) => [`sensor${i + 1}`, 0])
+    Array.from({ length: 49 }, (_, i) => [`sensor${i + 1}`, 0.5])
   ) as TSensorDist,
 
   updateSensorDist: (key: TSensorKey, dist: number) =>

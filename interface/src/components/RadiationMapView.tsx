@@ -71,8 +71,10 @@ const SensorCell: React.FC<SensorCellProps> = ({
           textAlign="center"
           width="100%"
           height="70%"
-          defaultValue={sensorDist[`sensor${index + 1}` as TSensorKey] || 0}
+          defaultValue={sensorDist[`sensor${index + 1}` as TSensorKey] || 0.5}
           onChange={handleInputChange}
+          disabled={value === null}
+          borderWidth={2}
         />
       ) : (
         <Box
@@ -127,7 +129,7 @@ const SensorGrid: React.FC<SensorGridProps> = ({
           index={index}
           value={data[`sensor${index + 1}` as TSensorKey]}
           color={
-            data[`sensor${index + 1}` as TSensorKey]
+            data[`sensor${index + 1}` as TSensorKey] != null
               ? colorsScale(data[`sensor${index + 1}` as TSensorKey])
               : "gray"
           }
